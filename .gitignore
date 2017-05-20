@@ -1,0 +1,7 @@
+lib/*
+bin/*
+build/*
+
+src/foo/*
+src/bar/*
+cmake/*
