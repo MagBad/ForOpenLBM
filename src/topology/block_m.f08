@@ -4,6 +4,7 @@ module Block
 
     implicit none
     type Block_t
+        integer :: blockID
         logical :: active
     end
 
