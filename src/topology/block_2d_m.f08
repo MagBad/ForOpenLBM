@@ -6,19 +6,27 @@ module Block2D
     
     type, extends(Block_t) :: Block2D_t
         ! Position
-        real :: x, y 
+        real, dimention(2) :: x
+
+        contains
+            procedure :: initializeBlock2D
+            procedure :: getCoord
     end type 
 
     contains
-        subroutine getX( object ) result( x )
-            type(Block_t), intent( in ) :: object
-            real :: x = object%getX
+        subroutine initializeBlock2D( object, x, active )
+            type(Block2D_t), intent(out) :: object
+            real, dimension(2) :: x 
+            logical :: active
+
+            object%x = x
+            object%active = active
 
         end subroutine
 
-        subroutine getY( object ) result( y )
-            type(Block_t), intent( in ) :: object
-            real :: y = object%getY
+        subroutine getCoord( object ) result( x )
+            type(Block2D_t), intent( in ) :: object
+            real, dimension(2) :: x = object%getX
 
         end subroutine
 

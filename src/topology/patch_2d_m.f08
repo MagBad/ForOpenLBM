@@ -5,7 +5,6 @@ module Patch2D
     implicit none
 
     type patch2D_t
-        private 
         type(patch_t) :: parent
         type(patch_t), dimension(1, *) :: childs
 
