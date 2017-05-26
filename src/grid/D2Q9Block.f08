@@ -3,11 +3,13 @@
 module D2Q9Block
 
     implicit none
-    use Block2D
+    use BlockD
 
     type, extends(Block2D_t) :: D2Q9Block_t
+        real, pointer :: distribution(:, :, :)
+        real, pointer :: tempDistribution(:, :, :)
+        type(B)
         
     end type Block2D_t
     
-
 end module D2Q9Block
