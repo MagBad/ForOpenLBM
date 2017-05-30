@@ -3,8 +3,9 @@
 module Boundary
 
     implicit none
+
     type Boundary_t
-    Q
-    end type
+        
+    end type Boundary_t
 
 end module Boundary
