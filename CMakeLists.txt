@@ -1,86 +1,80 @@
-# CMake project file for FOO
+cmake_minimum_required(VERSION 3.4)
 
-##################################################
-# Define the project and the depencies that it has
-##################################################
+project(build_test Fortran)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
-PROJECT(ForOpenLBM Fortran)
+enable_language(Fortran)
 
-# Set the FOO version
-SET(VERSION 1.2.3)
+# Check whether the user has selected a BUILD_TYPE
+IF ("${CMAKE_BUILD_TYPE}" STREQUAL "")
 
-# Add our local modlues to the module path
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+    message(STATUS "Build type not explicitly set. Trying to guess...")
+    get_filename_component(BINDIR ${PROJECT_BINARY_DIR} NAME)
+    IF (${BINDIR} MATCHES "RELEASE")
+        set(CMAKE_BUILD_TYPE "RELEASE")
+        message(STATUS "Set to ${CMAKE_BUILD_TYPE}")
+    ELSEIF(${BINDIR} MATCHES "DEBUG")
+        set(CMAKE_BUILD_TYPE "DEBUG")
+        message(STATUS "Set to ${CMAKE_BUILD_TYPE}")
+    ELSE()
+        message(WARNING "Unable to deduce build type. Use -DCMAKE_BUILD_TYPE=<RELEASE/DEBUG>")
+    ENDIF(${BINDIR} MATCHES "RELEASE")
 
-# Uncomment if it is required that Fortran 90 is supported
-#IF(NOT CMAKE_Fortran_COMPILER_SUPPORTS_F90)
-#    MESSAGE(FATAL_ERROR "Fortran compiler does not support F90")
-#ENDIF(NOT CMAKE_Fortran_COMPILER_SUPPORTS_F90)
+ELSE()
+    message(STATUS "Build Type is ${CMAKE_BUILD_TYPE}")
+ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "")
 
-# Set some options the user may choose
-# Uncomment the below if you want the user to choose a parallelization library
-OPTION(USE_MPI "Use the MPI library for parallelization" ON)
-OPTION(USE_OPENMP "Use OpenMP for parallelization" ON)
+set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/generated/mods)
 
-# This INCLUDE statement executes code that sets the compile flags for DEBUG,
-# RELEASE, and TESTING.  You should  review this file and make sure the flags 
-# are to your liking.
-INCLUDE(${CMAKE_MODULE_PATH}/SetFortranFlags.cmake) 
-# Locate and set parallelization libraries.  There are some CMake peculiarities
-# taken care of here, such as the fact that the FindOpenMP routine doesn't know
-# about Fortran.
-#INCLUDE(${CMAKE_MODULE_PATH}/SetParallelizationLibrary.cmake)
-# Setup the LAPACK libraries.  This also takes care of peculiarities, such as
-# the fact the searching for MKL requires a C compiler, and that the results
-# are not stored in the cache. 
-#INCLUDE(${CMAKE_MODULE_PATH}/SetUpLAPACK.cmake)
+include_directories(${CMAKE_Fortran_MODULE_DIRECTORY})
+file(MAKE_DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY})
 
-# There is an error in CMAKE with this flag for pgf90.  Unset it
-GET_FILENAME_COMPONENT(FCNAME ${CMAKE_Fortran_COMPILER} NAME)
-IF(FCNAME STREQUAL "pgf90")
-    UNSET(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS)
-ENDIF(FCNAME STREQUAL "pgf90")
+set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR})
 
-############################################################
-# Define the actual files and folders that make up the build
-############################################################
+# if DEBUG requested, set the various debug options.
+IF(${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+    set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -O0")
+    IF(${CMAKE_Fortran_COMPILER_ID} MATCHES "GNU")
+        set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -Wall -fcheck=all -fbacktrace")
+    ELSEIF(${CMAKE_Fortran_COMPILER_ID} MATCHES "Intel")
+        set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -warn all -check all -traceback")
+    ELSE()
+        message(WARNING "Unable to determine Compiler ID: ${CMAKE_Fortran_COMPILER_ID}")
+    ENDIF(${CMAKE_Fortran_COMPILER_ID} MATCHES "GNU")
+    message(STATUS "Debug flags for ${CMAKE_Fortran_COMPILER_ID}: ${CMAKE_Fortran_FLAGS_DEBUG}")
+ENDIF(${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
 
-# Define the executable name
-# SET(FOOEXE foo)
+set(PFUNIT_DIR $ENV{PFUNIT})
+IF(IS_DIRECTORY ${PFUNIT_DIR})
+    message(STATUS "pFUnit found in ${PFUNIT_DIR}")
 
-# Define the library name
-# SET(BARLIB bar)
-Set(PHYLIB physics)
-Set(GRIDLIB grid)
-Set(TOPLIB topology)
+    # If in DEBUG mode, add parameters for test coverage
+    IF(${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+        IF(${CMAKE_Fortran_COMPILER_ID} MATCHES "GNU")
+            message(STATUS "Adding compile options -fprofile-arcs -ftest-coverage")
+            set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
+        ELSEIF(${CMAKE_Fortran_COMPILER_ID} MATCHES "Intel")
+            set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG}")
+        ELSE()
+            message(WARNING "Unable to determine Compiler ID: ${CMAKE_Fortran_COMPILER_ID}")
+        ENDIF(${CMAKE_Fortran_COMPILER_ID} MATCHES "GNU")
+    ENDIF(${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
 
-# Define some directories
-SET(SRC ${CMAKE_SOURCE_DIR}/src)
-SET(LIB ${CMAKE_SOURCE_DIR}/lib)
-SET(BIN ${CMAKE_SOURCE_DIR}/bin)
-# SET(SRCFOO ${SRC}/foo)
-# SET(SRCBAR ${SRC}/bar)
 
-# Define the libraries
-Set(SRCPHY ${SRC}/physics)
-Set(SRCGRID ${SRC}/grid)
-Set(SRCTOP ${SRC}/topology)
+    if (${CMAKE_Fortran_COMPILER} MATCHES "mpi.*")
+        message(STATUS "We seem to be parallel, adding OpenMP support")
+        #        set(CMAKE_Fortran_COMPILER mpif90)
+        set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -qopenmp")
+    endif()
+ENDIF(IS_DIRECTORY ${PFUNIT_DIR})
 
-# Have the .mod files placed in the lib folder
-SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
+add_subdirectory(modules)
+add_subdirectory(executables)
 
-# The source for the BAR library and have it placed in the lib folder
-ADD_SUBDIRECTORY(${SRCPHY} ${LIB}/physics)
-ADD_SUBDIRECTORY(${SRCGRID} ${LIB}/grid)
-ADD_SUBDIRECTORY(${SRCTOP} ${LIB}topology)
-
-# The source for the FOO binary and have it placed in the bin folder
-ADD_SUBDIRECTORY(${SRCPHY} ${BIN}/physics)
-ADD_SUBDIRECTORY(${SRCGRID} ${BIN}/grid)
-ADD_SUBDIRECTORY(${SRCTOP} ${BIN}/topology)
-
-# Add a distclean target to the Makefile
-ADD_CUSTOM_TARGET(distclean 
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake
-)
+IF(IS_DIRECTORY ${PFUNIT_DIR})
+    add_subdirectory(tests)
+    enable_testing()
+    # Add the tests below
+    add_test(NAME Test_is_two COMMAND test1)
+ELSE()
+    message(WARNING "pFUnit not installed, testing disabled")
+ENDIF()

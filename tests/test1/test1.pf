@@ -1,0 +1,15 @@
+@test
+subroutine test_is_two_true
+    use pfunit_mod
+    use mod1, only: is_two
+    implicit none
+    @assertTrue(is_two(2))
+end subroutine test_is_two_true
+
+@test
+subroutine test_is_two_false
+    use pfunit_mod
+    use mod1, only: is_two
+    implicit none
+    @assertFalse(is_two(3))
+end subroutine test_is_two_false
