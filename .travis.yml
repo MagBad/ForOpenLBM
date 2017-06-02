@@ -3,7 +3,7 @@ sudo: required
 before_install:
   - sudo apt-get install gfortran cmake
 
-script
+script:
 - mkdir build && cd build
-- cmake ..
+- cmake -DCMAKE_BUILD_TYPE=DEBUG ..
 - make

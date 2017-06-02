@@ -1,5 +1,7 @@
 # Open Fortran LBM #
 
+[![Build Status](https://travis-ci.org/MagB93/ForOpenLBM.svg?branch=master)](https://travis-ci.org/MagB93/ForOpenLBM)
+| [https://codecov.io][1] | [@codecov][2] | [hello@codecov.io][3] |
 This repository contains a implementation of the Lattice Boltzmann Method ( LBM ) in a modern Fortran. 
 
 # State #
@@ -10,4 +12,3 @@ Currently nothing is workning. They're under development.
 Currently the LBM is mostly implemented in the C/C++ language. While the primarily operations required by the LBM are 
 highly array passed. The aim of this repository is to  develop an accessible Fortran implementation of the method. 
 It should be noted that the code is written in the modern format of Fortran. 
-            
