@@ -1,0 +1,9 @@
+language: c fortran
+sudo: required
+before_install:
+  - sudo apt-get install gfortran cmake
+
+script
+- mkdir build && cd build
+- cmake ..
+- make
