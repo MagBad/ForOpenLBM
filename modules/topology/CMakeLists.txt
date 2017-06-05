@@ -1,6 +1,6 @@
 project(topology Fortran)
 
-file(GLOB ${PROJECT_NAME}_sources "*.f08")
+file(GLOB ${PROJECT_NAME}_sources "*.f90")
 
 message(STATUS "Sources for project ${PROJECT_NAME}: ${${PROJECT_NAME}_sources}")
 
