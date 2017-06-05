@@ -1,3 +1,6 @@
 project(modules Fortran)
 
-add_subdirectory(mod1)
+add_subdirectory(util)
+add_subdirectory(topology)
+add_subdirectory(grid)
+add_subdirectory(physics)

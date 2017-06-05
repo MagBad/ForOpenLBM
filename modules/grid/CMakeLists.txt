@@ -1,16 +1,12 @@
-########################################
-# Set up how to compile the source files
-########################################
+project(grid Fortran)
 
-# Add the source files
-SET(GRID_src ${SRCGRID}/D2Q9Block.f08 D2Q9BounArray.f08
-  D2Q9BoundaryCondition.f08) 
+file(GLOB ${PROJECT_NAME}_sources "*.f08")
 
-#####################################################
-# Add the needed libraries and special compiler flags
-#####################################################
+message(STATUS "Sources for project ${PROJECT_NAME}: ${${PROJECT_NAME}_sources}")
 
-add_library(${GRIDLIB} SHARED ${GRID_src})
+add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_sources})
 
-# add_executable(grid.x grid_p.f08)
-
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)

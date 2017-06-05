@@ -1,9 +1,9 @@
-! Module for describing a block containing a describtion of the D2Q9 velocity set
+! Module for describing a block containing data
 
 module D2Q9Block
 
     implicit none
-    use BlockD
+    use Block
 
     type, extends(Block2D_t) :: D2Q9Block_t
         real, pointer :: distribution(:, :, :)

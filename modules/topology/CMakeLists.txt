@@ -1,13 +1,12 @@
-########################################
-# Set up how to compile the source files
-########################################
+project(topology Fortran)
 
-# Add the source files
-SET(TOPOGY ${SRCTOP}/block_m.f08) 
+file(GLOB ${PROJECT_NAME}_sources "*.f08")
 
-#####################################################
-# Add the needed libraries and special compiler flags
-#####################################################
+message(STATUS "Sources for project ${PROJECT_NAME}: ${${PROJECT_NAME}_sources}")
 
-add_library(${TOPLIB} MODULE ${TOPOGY})
+add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_sources})
 
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)

@@ -5,6 +5,8 @@ module Boundary
     implicit none
 
     type Boundary_t
+
+        character(*) :: kind
         
     end type Boundary_t
 
