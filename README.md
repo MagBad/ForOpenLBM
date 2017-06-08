@@ -6,7 +6,7 @@
 This repository contains a implementation of the Lattice Boltzmann Method ( LBM ) in a modern Fortran. 
 
 # State #
-Currently nothing is workning. They're under development.
+Currently nothing is working. They're under development.
 
 # Why Fortran? #
 

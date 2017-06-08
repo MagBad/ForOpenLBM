@@ -1,0 +1,113 @@
+@startuml
+
+class Block_t <<(T, orchid>>{
+    -- Attributes --
+    #bool :: active
+    -- Pointer Attributes --
+    #real, pointer(:, :) :: coords
+    
+    == Functions ==
+    +bool :: isActive()
+    +bool :: setActive()
+
+    == Subroutines ==
+    +real, pointer :: getX()
+}
+
+class Patch_t <<(T, orchid)>> {
+    -- Attributes --
+    #type(Patch_t) :: parent
+    -- Pointer Attributes --
+    #type(Patch_t), pointer :: children
+    #type(Patch_t), pointer :: neighbors
+
+    == Subroutines ==
+
+    +addBlock( Block_t block)
+    +deleteBlock( Block_t block)
+    +addChildren( Patch_t patch )
+    +addNeighbor( Patch_t patch )
+}
+
+Patch_t *-- Block_t
+
+class PatchGrid_t <<(T, orchid)>> {
+    -- Pointer Attributes --
+    #type(Patch_t), pointer :: patchSet
+
+    == Subroutines ==
+    +addPatch( Patch_t patch)
+    +type(Patch_t), pointer :: getPatches()
+    +adapt( visitor )
+}
+
+PatchGrid_t *-- Patch_t
+
+class MacroVar <<(T, orchid)>>{
+    -- Pointer Attribute --
+    #real, pointer :: value(:, :, :, :)
+
+    == Subroutines ==
+    #real, pointer getValue()
+}
+
+class IsoCompMacroVar_t <<(T, orchid)>>{
+    -- Pointer Attributes --
+    #type(MacroVar) :: density
+    #type(MacroVar) :: velocity
+
+    == Subroutines ==
+    +real, pointer :: getDensity()
+    +real, pointer :: getVelocity()
+
+}
+IsoCompMacroVar_t "1" *-- "2" MacroVar 
+
+class LatticeBlock_t <<(T, orchid)>>{
+    -- Pointer Attributes --
+    #real, pointer :: distributions(:, :, :, :)
+    #real, pointer :: tempDistributions(:, :, :, :)
+    #real, pointer :: fEq(:, :, :, :)
+    
+    == Methods ==
+    +real, pointer :: getDistributions()
+    +real, pointer :: getTempDistributions()
+    +real, pointer :: getFeq()
+
+}
+
+LatticeBlock_t --> Block_t
+LatticeBlock_t --> IsoCompMacroVar_t
+
+class BoundaryCondition_t <<(T, orchid)>>{
+    -- Attributes --
+    #real, pointer :: distributions
+    #char, pointer :: bcFlag
+
+    == Subroutines ==
+    +real, pointer :: getBoundaryValue()
+}
+BoundaryCondition_t --> Block_t
+
+class BoundaryConditionArray_t<<(T, orchid)>>{
+    -- Pointer Attributes --
+    #type(BoundaryCondition_t), pointer :: BoundaryConditionArray_t
+
+    == Subroutines ==
+    +setBoundary()
+    +type(BoundaryCondition_t) getBCArray()
+}
+
+BoundaryConditionArray_t *-- BoundaryCondition_t
+
+class HaloBlock_t<<(T, orchid)>>{
+    -- Pointer Attributes --
+    #type(BoundaryConditionArray_t), pointer :: bcRing
+    #type(LatticeBlock_t), pointer :: lattices
+
+    == Subroutines ==
+}
+
+HaloBlock_t "1" *-- "1" LatticeBlock_t
+HaloBlock_t *-- BoundaryConditionArray_t
+@enduml
