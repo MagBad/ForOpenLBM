@@ -3,71 +3,67 @@
 module Block
 
     implicit none
-    
+
     type Block_t
         integer :: blockID
         logical :: activeBlock
-        real, allocatable, dimension(:, :, :, 3) :: coords
-    
-    contains
-        public :: getId ! Get the id
-        public :: isActiveBlock
-        public :: isNotActiveBlock
-        public :: getCoords
+        real, allocatable, dimension(:, :, :, :) :: coords
 
     end type Block_t
-        
+
+
     interface Block_t
-            procedure :: initializeBlock3D
-    end interface Block_t
+        module procedure initializeBlock
+        module procedure isActiveBlock
+
+     end interface Block_t
 
     contains
 
-        subroutine isActiveBlock( object ) result( active )
-            type(Block_t), intent( inout ) :: object
-            logical, pointer :: active = object%activeBlock .eq. .True.
+      function isActiveBlock( object ) result( active )
 
-        end subroutine 
+        implicit none
+        type(Block_t), intent( in ) :: object
+        logical :: active
 
-        subroutine isNotActiveBlock( object ) result( active )
-            type(Block_t), intent( inout ) :: object
-            logical :: active = object%activeBlock .eq. .False.
+        active = object%activeBlock .eqv. .True.
 
-        end subroutine 
+      end function isActiveBlock
 
-        subroutine setActive( object, val)
-            type(Block_n), intent( inout ) :: object
-            logical :: val 
+      subroutine setActive( object, val)
+          type(Block_t), intent( inout ) :: object
+          logical, intent(in) :: val 
 
-            object%active = val
+          object%activeBlock = val
 
-        end subroutine setActive
-        
-        subroutine initializeBlock3D( object, x, y, z, active ) result(object)
+      end subroutine setActive
 
-            use Util
+      function initializeBlock( x, y, z, active ) result(object)
 
-            type(Block3D_t) :: object
-            logical :: active
-            real, dimension(:) :: x, y, z
-            integer :: i, j, k ! Loop varibles
+        use Util
+        implicit none
 
+        type(Block_t) :: object
+        logical, intent(in) :: active
+        real, intent(in), dimension(:) :: x, y, z
 
-            ! Allocate the coords for the ranges
-            allocate(object%coords(size(x) * size(y) * size(z) * 4)
-            object%active = active
+        ! Allocate the coords for the ranges
+        allocate( object%coords(size(x), size(y), size(z), 3) )
+        object%activeBlock = active
 
-            ! Do the computations for
-            call meshgrid(object%coords, x, y, z)
+        ! Do the computations for
+        call meshgrid(object%coords, x, y, z)
 
-        end subroutine
+      end function initializeBlock
 
-        !> Routine to return the coordinates from the object
-        subroutine getCoord( object ) result( x )
-            type( Block3D_t ), intent(in) :: object
-            real, dimension(:, :, :, 4) :: x = object%coords
+      ! Routine to return the coordinates from the object
+      subroutine getCoords( object, x )
 
-        end subroutine getCoord
+        type( Block_t), intent(in) :: object
+        real, intent(out), dimension(:, :, :, :) :: x
 
+        x = object%coords
+
+      end subroutine getCoords
 
 end module Block

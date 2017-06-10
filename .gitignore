@@ -1,6 +1,13 @@
 lib/*
 bin/*
 build/*
+out/*
+.project
 
-src/foo/*
-src/bar/*
+.vscode/*
+.vscode/.cmaketools.json
+
+FREADME.md
+DEBUG
+RELEASE
+.profile
