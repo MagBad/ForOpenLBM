@@ -3,23 +3,33 @@
 class Block_t <<(T, orchid>>{
     -- Attributes --
     #bool :: active
-    -- Pointer Attributes --
-    #real, pointer(:, :) :: coords
     
     == Functions ==
     +bool :: isActive()
     +bool :: setActive()
 
-    == Subroutines ==
-    +real, pointer :: getX()
 }
 
+class CoordinateBlock_t <<(T, orchid)>>{
+     -- Attributes --
+     +real, allocatable, dimension(:, :, :, :) :: coords
+
+    == Subroutines ==
+    +real, pointer :: getX()
+
+}
+
+CoordinateBlock_t --> Block_t
+
 class Patch_t <<(T, orchid)>> {
+
     -- Attributes --
     #type(Patch_t) :: parent
-    -- Pointer Attributes --
-    #type(Patch_t), pointer :: children
-    #type(Patch_t), pointer :: neighbors
+
+    -- Allocatable Attributes --
+    +type(Block_t), allocatable :: blocks
+    +type(Patch_t), allocatable :: children
+    +type(Patch_t), allocatable :: neighbors
 
     == Subroutines ==
 
@@ -61,7 +71,20 @@ class IsoCompMacroVar_t <<(T, orchid)>>{
     +real, pointer :: getVelocity()
 
 }
-IsoCompMacroVar_t "1" *-- "2" MacroVar 
+IsoCompMacroVar_t "1" *-- "2" MacroVar
+
+class Collide_t <<(T, orchid)>>{
+      +real, parameter :: collideParam
+}
+
+class BGKCollide_t <<(T, orchid)>>{
+      +type(Collide_T) :: omega
+
+      -- Interface: BGKCollide_t --
+      module procedure initCollide
+}
+
+BGKCollide_t --> Collide_t
 
 class LatticeBlock_t <<(T, orchid)>>{
     -- Pointer Attributes --
@@ -100,14 +123,8 @@ class BoundaryConditionArray_t<<(T, orchid)>>{
 
 BoundaryConditionArray_t *-- BoundaryCondition_t
 
-class HaloBlock_t<<(T, orchid)>>{
-    -- Pointer Attributes --
-    #type(BoundaryConditionArray_t), pointer :: bcRing
-    #type(LatticeBlock_t), pointer :: lattices
-
-    == Subroutines ==
+class ForOpenLBMManager <<(T, orchid)>>{
+      -- 
 }
 
-HaloBlock_t "1" *-- "1" LatticeBlock_t
-HaloBlock_t *-- BoundaryConditionArray_t
 @enduml
