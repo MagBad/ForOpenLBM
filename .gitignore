@@ -3,6 +3,7 @@ bin/*
 build/*
 out/*
 .project
+*.json
 
 .vscode/*
 .vscode/.cmaketools.json

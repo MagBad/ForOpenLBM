@@ -6,7 +6,7 @@ module Boundary
 
     type Boundary_t
 
-        character(*) :: kind
+        character(99) :: boundaryKind
         
     end type Boundary_t
 

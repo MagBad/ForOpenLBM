@@ -4,66 +4,40 @@ module Block
 
     implicit none
 
-    type Block_t
-        integer :: blockID
+    type, abstract :: Block_t
         logical :: activeBlock
-        real, allocatable, dimension(:, :, :, :) :: coords
 
-    end type Block_t
+      contains
+        ! Declaring the interface for the allocation of child objects
+        procedure(initBlockInterface), deferred :: initBlock_abs
+        procedure(isActiveBlockInterface), deferred :: isActiveBlock_abs
+        procedure(setActiveInterface), deferred :: setActive_abs
+        generic :: initBlock => initBlock_abs
+        generic :: isActiveBlock => isActiveBlock_abs
+        generic :: setActive => setActive_abs
 
+     end type Block_t
 
-    interface Block_t
-        module procedure initializeBlock
-        module procedure isActiveBlock
+     interface
+        ! Interface for the Block_t allocation
+        subroutine initBlockInterface( self, active )
+          import
+          class(Block_t), intent(inout) :: self
+          logical, intent(in) :: active
 
-     end interface Block_t
+        end subroutine initBlockInterface
 
-    contains
+        function isActiveBlockInterface( self ) result( active )
+          import
+          class(Block_t), intent(in) :: self
+          logical :: active
 
-      function isActiveBlock( object ) result( active )
+        end function isActiveBlockInterface
 
-        implicit none
-        type(Block_t), intent( in ) :: object
-        logical :: active
-
-        active = object%activeBlock .eqv. .True.
-
-      end function isActiveBlock
-
-      subroutine setActive( object, val)
-          type(Block_t), intent( inout ) :: object
-          logical, intent(in) :: val 
-
-          object%activeBlock = val
-
-      end subroutine setActive
-
-      function initializeBlock( x, y, z, active ) result(object)
-
-        use Util
-        implicit none
-
-        type(Block_t) :: object
-        logical, intent(in) :: active
-        real, intent(in), dimension(:) :: x, y, z
-
-        ! Allocate the coords for the ranges
-        allocate( object%coords(size(x), size(y), size(z), 3) )
-        object%activeBlock = active
-
-        ! Do the computations for
-        call meshgrid(object%coords, x, y, z)
-
-      end function initializeBlock
-
-      ! Routine to return the coordinates from the object
-      subroutine getCoords( object, x )
-
-        type( Block_t), intent(in) :: object
-        real, intent(out), dimension(:, :, :, :) :: x
-
-        x = object%coords
-
-      end subroutine getCoords
+        function setActiveInterface( self )
+            import
+            class(Block_t), intent(inout) :: self
+        end  function setActiveInterface
+     end interface
 
 end module Block
