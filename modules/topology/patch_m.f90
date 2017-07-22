@@ -1,52 +1,51 @@
-! Module to describe a Patch class, a patch is a leaf/ node in the data 
-structure tree
+! Module to describe a Patch class, a patch is a leaf/ node in the data structure tree
 
 module Patch
 
-    implicit none
     use Block
+    implicit none
 
-    type Patch_t
-        type(Patch_t), pointer :: parent => NULL
-        type(Patch_t), dimension(1, :), pointer :: children
-        type(Patch_t), dimension(1, :), pointer :: neighbours
-        type(Block_t), dimension(1, :), pointer :: blocks
-        integer :: numberOfChildren 
+    type, abstract :: Patch_t
+        class(Patch_t) :: parent
+        class(Patch_t), :: children( : )
+        class(Patch_t), :: neighbours( : )
+        class(Block_t), :: blocks( : )
+        integer :: numberOfChildren
         integer :: numberOfBlocks
         integer :: numberOfNeighbours
+    end type Patch_t
 
-        contains
-            procedure :: initilizePatch
-            procedure :: addBlock
-            procedure :: deleteBlock
-            procedure :: addChild
-            procedure :: addNeighbour
-            procedure :: getLocalNeighbourBlock
-            procedure :: getRemoteNeighbourBlock
-            procedure :: adapt
+    abstarct interface
+        procedure :: initilizePatch
+        procedure :: addBlock
+        procedure :: deleteBlock
+        procedure :: addChild
+        procedure :: addNeighbour
+        procedure :: getLocalNeighbourBlock
+        procedure :: getRemoteNeighbourBlock
+        procedure :: adapt
+    end interface
 
-    end type Patch_t  
-
+    contains
     ! The initialization routine is called from the grid layer
-    subroutine initilizePatch( object, numberOfBlocks, &
-        numberOfNeighbours, parent)
+    subroutine initilizePatch( object, numberOfBlocks, numberOfNeighbours, parent)
 
         type(Patch_t), intent(inout) :: object
         integer :: numberOfBlocks
         integer, optional :: numberOfNeighbours => 0
         type(Block_t), dimension( 1, : ) :: initBlock
-        type(Patch_t), dimension( 1, : ) :: children 
+        type(Patch_t), dimension( 1, : ) :: children
         type(Patch_t), dimension( 1, : ) :: neighbours
         type(Patch_t), intent(inout), optional :: parent
         logical :: dummyParent = NULL
 
         object%numberOfBlocks = numberOfBlocks
         object%numberOfNeighbours = numberOfNeighbours
-        
+
         ! Check the optional value parent
         if( .not. present(parent) ) then
             parent = dummyParent
-! 
+!
         end if
 
         ! Assign the possible parent
@@ -60,8 +59,7 @@ module Patch
         allocate(neighbours(1, numberOfNeighbours))
         object%neighbours = neighbours
 
-        ! Allocate the array for storing the children, they're initialized 
-without any children. 
+        ! Allocate the array for storing the children, they're initialized without any children.
         ! The value is changend in another subroutine
         allocate(childern(1, 1))
         children = NULL
@@ -73,7 +71,7 @@ without any children.
     subroutine addBlock(object, block)
 
         type(Patch_t), intent(inout) :: object
-        type(Block_t), intent(in) :: block 
+        type(Block_t), intent(in) :: block
         type(Block_t), dimension(1,:), allocatable :: tempBlock
 
         ! Allocate an increased array for the new block
@@ -82,9 +80,8 @@ without any children.
         tempBlock( 1:object%numberOfBlocks ) = object%blocks
         tempBlock( object%numberOfBlocks + 1 ) = block
 
-        ! Move the new block to the object, the former block array is 
-deallocated
-        call move_alloc(object%blocks, tempBlock ) 
+        ! Move the new block to the object, the former block array is deallocated
+        call move_alloc(object%blocks, tempBlock )
 
     end subroutine addBlock
 
@@ -103,11 +100,11 @@ deallocated
         type(Patch_t), dimension(1, :), allocatable :: tempChild
         logical :: testSz
 
-        ! Test wether the object has children or the number of children is 
-equal to zero. Then the first children can be moved inside the object without a 
+        ! Test wether the object has children or the number of children is
+equal to zero. Then the first children can be moved inside the object without a
 new allacation.
         testSz = associated(object%children) .or. object%numberOfChildren .eq. 0
-        
+
         if(testSz) then
             object%children(1) = child
         else
@@ -118,12 +115,12 @@ new allacation.
             ! Copy the data from the object
             tempChild(1, 1:object%numberOfChildren) = object%children
 
-            ! Move the new pointer to the object and deallocate the previous 
+            ! Move the new pointer to the object and deallocate the previous
 array
             call move_alloc( object%children, tempChild )
             object%numberOfChildren = object%numberOfChildren + 1
 
-        end if         
+        end if
 
     end subroutine addChild
 
@@ -134,7 +131,7 @@ array
         logical :: testSz
 
         ! Same precidure as the previous subroutine
-        testSz = associated(object%neighbours) .or. object%numberOfNeighbours 
+        testSz = associated(object%neighbours) .or. object%numberOfNeighbours
 .eq. 0
         if( testSz ) then
             object%neighbours = neighbour
