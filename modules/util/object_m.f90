@@ -8,26 +8,26 @@ module Object_m
     logical :: user_defined = .false.
 
     contains
-      procedure(isDefined), deferred :: is_definied
-      procedure(markAsDefinied), deferred :: mark_as_definied
-      generic :: isDefined => is_definied
-      generic :: markAsDefinied => mark_as_definied
+      procedure(isDefinedInterface), deferred :: is_defined
+      procedure(markAsDefinedInterface), deferred :: mark_as_defined
+      generic :: isDefined => is_defined
+      generic :: markAsDefined => mark_as_defined
 
   end type object_t
 
   interface
-    pure function isDefined(obj) result( defined )
+    pure function isDefinedInterface(obj) result( defined )
         import
         class( object_t ), intent( in ) :: obj
         logical :: defined
 
-    end function isDefined
+    end function isDefinedInterface
 
-    elemental subroutine markAsDefinied(obj)
+    elemental subroutine markAsDefinedInterface(obj)
       import
       class( object_t ), intent( inout ) :: obj
 
-    end subroutine markAsDefinied
+    end subroutine markAsDefinedInterface
   end interface
 
 

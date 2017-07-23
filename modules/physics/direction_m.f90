@@ -5,7 +5,7 @@ module Direction
 
     implicit none
 
-    type Direction_t
+    type, abstract :: Direction_t
     end type
 
     type, extends(Direction_t) :: North
@@ -19,10 +19,5 @@ module Direction
 
     type, extends(Direction_t) :: East
     end type
-
-    type DirectionTuple
-        type(Direction_t), allocatable :: directions(:)
-    end type
-
 
 end module Direction
