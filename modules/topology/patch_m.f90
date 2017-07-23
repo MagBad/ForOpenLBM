@@ -1,11 +1,16 @@
+<<<<<<< HEAD
 ! Module to describe a Patch class, a patch is a leaf/ node in the data
 ! structure tree
+=======
+! Module to describe a Patch class, a patch is a leaf/ node in the data structure tree
+>>>>>>> 087149131eb8e757d160061a89f5f7330024c220
 
 module Patch
 
     use Block
     implicit none
 
+<<<<<<< HEAD
     type Patch_t
         type(Patch_t), pointer :: parent => NULL
         type(Patch_t), dimension(:), pointer :: children
@@ -27,9 +32,32 @@ module Patch
 
     end type Patch_t
 
+=======
+    type, abstract :: Patch_t
+        class(Patch_t) :: parent
+        class(Patch_t), :: children( : )
+        class(Patch_t), :: neighbours( : )
+        class(Block_t), :: blocks( : )
+        integer :: numberOfChildren
+        integer :: numberOfBlocks
+        integer :: numberOfNeighbours
+    end type Patch_t
+
+    abstarct interface
+        procedure :: initilizePatch
+        procedure :: addBlock
+        procedure :: deleteBlock
+        procedure :: addChild
+        procedure :: addNeighbour
+        procedure :: getLocalNeighbourBlock
+        procedure :: getRemoteNeighbourBlock
+        procedure :: adapt
+    end interface
+
+    contains
+>>>>>>> 087149131eb8e757d160061a89f5f7330024c220
     ! The initialization routine is called from the grid layer
-    subroutine initilizePatch( object, numberOfBlocks, &
-        numberOfNeighbours, parent)
+    subroutine initilizePatch( object, numberOfBlocks, numberOfNeighbours, parent)
 
         type(Patch_t), intent(inout) :: object
         integer :: numberOfBlocks
@@ -60,8 +88,12 @@ module Patch
         allocate(neighbours(1, numberOfNeighbours))
         object%neighbours = neighbours
 
+<<<<<<< HEAD
         ! Allocate the array for storing the children, they're initialized
         ! without any children.
+=======
+        ! Allocate the array for storing the children, they're initialized without any children.
+>>>>>>> 087149131eb8e757d160061a89f5f7330024c220
         ! The value is changend in another subroutine
         allocate(childern(1, 1))
         children = NULL

@@ -8,10 +8,8 @@ module CoordinateBlock_m
      real, allocatable, dimension(:, :, :, :) :: coords
 
    contains
-     interface CoordinateBlock_t
-        module procedure getX
-        module procedure allocateBlock
-     end interface CoordinateBlock_t
+        procedure getX
+        procedure allocateBlock
 
   end type CoordinateBlock_t
 
