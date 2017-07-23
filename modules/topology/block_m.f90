@@ -5,7 +5,7 @@ module Block
     implicit none
 
     type, abstract :: Block_t
-        logical :: activeBlock
+      logical :: activeBlock
 
       contains
         ! Declaring the interface for the allocation of child objects
