@@ -15,7 +15,7 @@ module Object_m
 
   end type object_t
 
-  interface
+  abstract interface
     pure function isDefinedInterface(obj) result( defined )
         import
         class( object_t ), intent( in ) :: obj

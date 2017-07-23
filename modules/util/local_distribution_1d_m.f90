@@ -9,25 +9,22 @@ module Local_Distribution_1D_m
     real(real_w), allocatable :: f( :, :)
 
   contains
-    generic is_defined => is_defined_1d_dist
-    procedure :: is_defined_1d_dist
-    procedure :: mark_as_defined
     procedure :: is_defined
-
+    procedure :: mark_as_defined
 
   end type local_distribution
 
 contains
-  pure function is_defined_1d_dist( obj ) result( defined )
-    type( local_distribution ), intent( in ) :: obj
+  pure function is_defined( obj ) result( defined )
+    class( local_distribution ), intent( in ) :: obj
     logical :: defined
 
     defined = obj%user_defined
 
-  end function is_defined_1d_dist
+  end function is_defined
 
   elemental subroutine mark_as_defined( obj )
-    type( local_distribution ), intent( inout ) :: obj
+    class( local_distribution ), intent( inout ) :: obj
 
     obj%user_defined = .TRUE.
   end subroutine mark_as_defined
