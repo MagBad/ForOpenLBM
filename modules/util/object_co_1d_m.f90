@@ -6,7 +6,7 @@ module Object_1D_Co_m
   implicit none
 
   type, abstract :: object_co_1d_t
-    logical, allocatable :: user_defined( : )[ : ]
+    logical, allocatable, codimension[ *  ] :: user_defined( : )
 
   contains
     procedure( isDefined ), deferred :: is_defined

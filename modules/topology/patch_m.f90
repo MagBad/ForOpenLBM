@@ -74,7 +74,7 @@ module Patch
 
         type(Patch_t), intent(inout) :: object
         type(Block_t), intent(in) :: block
-        type(Block_t), dimension(1,:), allocatable :: tempBlock
+        type(Block_t), dimension(:), allocatable :: tempBlock
 
         ! Allocate an increased array for the new block
         allocate(tempBlock( 1, object%numberOfBlocks + 1))
