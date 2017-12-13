@@ -1,0 +1,5 @@
+{
+  "mod_dirs": [ "modules", "modules/analytical", "modules/grid", "modules/physics",
+    "modules/topology", "modules/util"]
+
+}

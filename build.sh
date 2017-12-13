@@ -1,7 +1,7 @@
 # /usr/bin/env bash
 
 ROOTDIR=`pwd`
-CONFIGS="debug release"
+CONFIGS="DEBUG RELEASE"
 
 for CONFIG in $CONFIGS; do
     BUILDFOLDER=$ROOTDIR/build/$CONFIG

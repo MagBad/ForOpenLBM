@@ -9,6 +9,6 @@ out/*
 .vscode/.cmaketools.json
 
 FREADME.md
-DEBUG
-RELEASE
+DEBUG/*
+RELEASE/*
 .profile
